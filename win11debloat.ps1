@@ -116,18 +116,18 @@ Write-Host "Disabling some services and scheduled tasks"
         "LanmanServer" # Server
         #"SensorService" # Sensor Service
         "RetailDemo" # Retail Demo Service
-        "RemoteRegistry" # Remote Registry
-        "UmRdpService" # Remote Desktop Services UserMode Port Redirector
-        "TermService" # Remote Desktop Services
-        "SessionEnv" # Remote Desktop Configuration
+        #"RemoteRegistry" # Remote Registry
+        #"UmRdpService" # Remote Desktop Services UserMode Port Redirector
+        #"TermService" # Remote Desktop Services
+        #"SessionEnv" # Remote Desktop Configuration
         "RasMan" # Remote Access Connection Manager
         "RasAuto" # Remote Access Auto Connection Manager
         #"TroubleshootingSvc" # Recommended Troubleshooting Service
         #"RmSvc" # Radio Management Service (Might be needed for laptops)
         #"QWAVE" # Quality Windows Audio Video Experience
         #"wercplsupport" # Problem Reports Control Panel Support
-        "Spooler" # Print Spooler
-        "PrintNotify" # Printer Extensions and Notifications
+        #"Spooler" # Print Spooler
+        #"PrintNotify" # Printer Extensions and Notifications
         "PhoneSvc" # Phone Service
         #"SEMgrSvc" # Payments and NFC/SE Manager
         "WpcMonSvc" # Parental Controls
