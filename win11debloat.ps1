@@ -87,3 +87,100 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInf
 Write-Host "Disabling Error Reporting..."
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Type DWord -Value 1
 Disable-ScheduledTask -TaskName "Microsoft\Windows\Windows Error Reporting\QueueReporting" | Out-Null
+
+# Disable some services and scheduled tasks
+Write-Host "Disabling some services and scheduled tasks"
+
+    $Services = @(
+        #"*xbox*" # Xbox Services
+        #"*Xbl*" # Xbox Services
+        "LanmanWorkstation"
+        "workfolderssvc"
+        #"WinHttpAutoProxySvc" # NSudo Required
+        #"WSearch" # Windows Search
+        #"PushToInstall" # Needed for Microsoft Store
+        #"icssvc" # Mobile Hotspot
+        "MixedRealityOpenXRSvc" # Mixed Reality
+        "WMPNetworkSvc" # Windows Media Player Sharing
+        #"LicenseManager" # License Manager for Microsoft Store
+        "wisvc" # Insider Program
+        "WerSvc" # Error Reporting
+        #"WalletService" # Wallet Service
+        #"lmhosts" # TCP/IP NetBIOS Helper
+        "SysMain" # SuperFetch - Safe to disable if you have a SSD
+        "svsvc" # Spot Verifier
+        #"sppsvc" # Software Protection
+        "SCPolicySvc" # Smart Card Removal Policy
+        "ScDeviceEnum" # Smart Card Device Enumeration Service
+        "SCardSvr" # Smart Card
+        "LanmanServer" # Server
+        #"SensorService" # Sensor Service
+        "RetailDemo" # Retail Demo Service
+        "RemoteRegistry" # Remote Registry
+        "UmRdpService" # Remote Desktop Services UserMode Port Redirector
+        "TermService" # Remote Desktop Services
+        "SessionEnv" # Remote Desktop Configuration
+        "RasMan" # Remote Access Connection Manager
+        "RasAuto" # Remote Access Auto Connection Manager
+        #"TroubleshootingSvc" # Recommended Troubleshooting Service
+        #"RmSvc" # Radio Management Service (Might be needed for laptops)
+        #"QWAVE" # Quality Windows Audio Video Experience
+        #"wercplsupport" # Problem Reports Control Panel Support
+        "Spooler" # Print Spooler
+        "PrintNotify" # Printer Extensions and Notifications
+        "PhoneSvc" # Phone Service
+        #"SEMgrSvc" # Payments and NFC/SE Manager
+        "WpcMonSvc" # Parental Controls
+        #"CscService" # Offline Files
+        #"InstallService" # Microsoft Store Install Service
+        #"SmsRouter" # Microsoft Windows SMS Router Service
+        #"smphost" # Microsoft Storage Spaces SMP
+        #"NgcCtnrSvc" # Microsoft Passport Container
+        #"MsKeyboardFilter" # Microsoft Keyboard Filter ... thanks (.AtomRadar treasury ♛#8267) for report. 
+        #"cloudidsvc" # Microsoft Cloud Identity Service
+        #"wlidsvc" # Microsoft Account Sign-in Assistant
+        "*diagnosticshub*" # Microsoft (R) Diagnostics Hub Standard Collector Service
+        #"iphlpsvc" # IP Helper - Might break some VPN Clients
+        "lfsvc" # Geolocation Service
+        "fhsvc" # File History Service
+        "Fax" # Fax
+        #"embeddedmode" # Embedded Mode
+        "MapsBroker" # Downloaded Maps Manager
+        "TrkWks" # Distributed Link Tracking Client
+        "WdiSystemHost" # Diagnostic System Host
+        "WdiServiceHost" # Diagnostic Service Host
+        "DPS" # Diagnostic Policy Service
+        "diagsvc" # Diagnostic Execution Service
+        #"DoSvc" # Delivery Optimization
+        #"DusmSvc" # Data Usage
+        #"VaultSvc" # Credential Manager
+        #"AppReadiness" # App Readiness
+    )
+
+    #Disable Services listed above
+    foreach ($Service in $Services) {
+    Get-Service -Name $Service -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled
+        if($Service.Status -eq "Running"){
+            Stop-Service -Name $Service -Force -ErrorAction SilentlyContinue | Out-Null
+            Write-Host "Trying to stop " -NoNewline
+            Write-Host "`""$Service.DisplayName"`"" -ForegroundColor Cyan
+        }
+    }
+
+ #Disable Advertising ID
+    If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo")) {
+	New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" | Out-Null
+    }
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" -Name "Enabled" -Type DWord -Value 0
+    write-Host "Advertising ID has been disabled"
+
+    #Disable SmartScreen
+    if (!(Test-Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer")){
+        New-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer" -Name "SmartScreenEnabled" -Type String -Value "Off"
+    if (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\AppHost")){
+        New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\AppHost" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\AppHost" -Name "EnableWebContentEvaluation" -Value 0
+    write-Host "SmartScreen has been disabled"
